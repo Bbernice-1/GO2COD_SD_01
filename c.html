@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Manager Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: #2c3e50;
+            padding: 20px;
+            color: white;
+        }
+
+        .main-content {
+            padding: 20px;
+            background: #f8f9fa;
+            overflow-y: auto;
+        }
+
+        .app-title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #fff;
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ecf0f1;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #34495e;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        input::placeholder {
+            color: #bdc3c7;
+        }
+
+        input:focus {
+            outline: none;
+            background: #435c78;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        #addButton {
+            background: #2ecc71;
+            color: white;
+            width: 100%;
+        }
+
+        #updateButton {
+            background: #f1c40f;
+            color: #2c3e50;
+            width: 100%;
+            display: none;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 15px;
+            padding-left: 45px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #333;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #95a5a6;
+        }
+
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .contact-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .contact-info {
+            margin-bottom: 15px;
+        }
+
+        .contact-info strong {
+            font-size: 1.2em;
+            color: #2c3e50;
+        }
+
+        .contact-info p {
+            color: #7f8c8d;
+            margin: 5px 0;
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            color: white;
+            flex: 1;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            flex: 1;
+        }
+
+        .feedback {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                padding: 15px;
+            }
+
+            .contacts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar with Form -->
+        <div class="sidebar">
+            <h1 class="app-title">Contact Manager</h1>
+
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="name" placeholder="Enter name">
+            </div>
+
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" id="phone" placeholder="Enter phone number">
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="Enter email">
+            </div>
+
+            <div class="action-buttons">
+                <button id="addButton" onclick="addContact()">Add Contact</button>
+                <button id="updateButton" onclick="updateContact()">Update Contact</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search contacts...">
+            </div>
+
+            <div id="contactsList" class="contacts-grid"></div>
+        </div>
+    </div>
+
+    <div id="feedback" class="feedback"></div>
+
+    <script>
+        let contacts = [];
+        let editingIndex = -1;
+
+        function addContact() {
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+
+            if (!name || !phone || !email) {
+                showFeedback('Please fill all fields', 'error');
+                return;
+            }
+
+            const contact = { name, phone, email };
+            contacts.push(contact);
+            showFeedback('Contact added successfully', 'success');
+            clearForm();
+            displayContacts();
+        }
+
+        function editContact(index) {
+            editingIndex = index;
+            const contact = contacts[index];
+
+            document.getElementById('name').value = contact.name;
+            document.getElementById('phone').value = contact.phone;
+            document.getElementById('email').value = contact.email;
+
+            document.getElementById('addButton').style.display = 'none';
+            document.getElementById('updateButton').style.display = 'block';
+        }
+
+        function updateContact() {
+            if (editingIndex === -1) return;
+
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+
+            if (!name || !phone || !email) {
+                showFeedback('Please fill all fields', 'error');
+                return;
+            }
+
+            contacts[editingIndex] = { name, phone, email };
+
+            showFeedback('Contact updated successfully', 'success');
+            clearForm();
+            exitEditMode();
+            displayContacts();
+        }
+
+        function exitEditMode() {
+            editingIndex = -1;
+            document.getElementById('addButton').style.display = 'block';
+            document.getElementById('updateButton').style.display = 'none';
+        }
+
+        function deleteContact(index) {
+            contacts.splice(index, 1);
+            showFeedback('Contact deleted successfully', 'success');
+            if (editingIndex === index) {
+                exitEditMode();
+                clearForm();
+            }
+            displayContacts();
+        }
+
+        function displayContacts(filteredContacts = contacts) {
+            const contactsList = document.getElementById('contactsList');
+            contactsList.innerHTML = '';
+
+            filteredContacts.forEach((contact, index) => {
+                const contactCard = document.createElement('div');
+                contactCard.className = 'contact-card';
+                contactCard.innerHTML = `
+                    <div class="contact-info">
+                        <strong>${contact.name}</strong>
+                        <p>📱 ${contact.phone}</p>
+                        <p>✉️ ${contact.email}</p>
+                    </div>
+                    <div class="card-buttons">
+                        <button class="edit-btn" onclick="editContact(${index})">Edit</button>
+                        <button class="delete-btn" onclick="deleteContact(${index})">Delete</button>
+                    </div>
+                `;
+                contactsList.appendChild(contactCard);
+            });
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback ${type}`;
+            feedback.style.display = 'block';
+            feedback.style.backgroundColor = type === 'success' ? '#2ecc71' : '#e74c3c';
+            feedback.style.color = 'white';
+
+            setTimeout(() => {
+                feedback.style.display = 'none';
+            }, 3000);
+        }
+
+        function clearForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('email').value = '';
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredContacts = contacts.filter(contact =>
+                contact.name.toLowerCase().includes(searchTerm) ||
+                contact.phone.includes(searchTerm)
+            );
+            displayContacts(filteredContacts);
+        });
+    </script>
+</body>
+
+</html>
